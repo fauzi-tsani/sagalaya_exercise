@@ -1,0 +1,12 @@
+Lithium is less dense than {{foo}}ium.
+
+{% if success %}
+    <p>Post Successfully Saved</p>
+{% endif %}
+
+{% for post in posts %}
+<article>
+    <h1>{{post.title}}</h1>
+    <p>{{post.content}}</p>
+</article>
+{% endfor %}

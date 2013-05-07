@@ -1,0 +1,202 @@
+<?php
+
+namespace sagalaya\extensions\data;
+
+use lithium\util\Validator;
+
+/**
+ *
+ * @author Mukhamad Ikhsan
+ *
+ */
+class ModelValidator {
+
+	public static $_errors;
+
+	/**
+	 * Check if model is in valid state
+	 * @param Model $object
+	 * @param array $object_hash
+     * @return bool
+     */
+	public static function isValid($object, $object_hash = array()) {
+		$errors = ModelValidator::validate($object, $object_hash);
+		return empty($errors);
+	}
+
+	/**
+	 * Validate model state, generate errors value if any
+	 * @param Model $object
+	 * @param array $object_hash
+     * @return array|null
+     */
+	public static function validate($object, $object_hash = array()) {
+
+		$errors = null;
+		if (!in_array(spl_object_hash($object), $object_hash)) {
+			$object_hash[] = spl_object_hash($object);
+		}
+		$reflection = new \ReflectionClass($object);
+		$className = $reflection->getName();
+		$validations = $object->validations;
+
+        if (!empty($object->_conditions)) {
+            foreach($object->_conditions as $field => $condition) {
+                if (isset($validations[$field])) {
+                    $validations[$field] = array_merge($condition, $validations[$field]);
+                } else {
+                    $validations[$field] = $condition;
+                }
+            }
+        }
+var_dump($validations);die;
+		if (!empty($validations)) {
+
+			$unique = $equalWith = $custom = array();
+
+			foreach ($validations as $field => $rules) {
+				foreach ($rules as $key => $value) {
+					if ($value[0] == "unique") {
+						$unique[] = array($field, "message" => $value['message']);
+						if (count($validations[$field]) == 1) {
+							unset($validations[$field]);
+						} else {
+							unset($validations[$field][$key]);
+						}
+					} else if ($value[0] == "equalWith") {
+						$equalWith[] = array($field, "message" => $value['message'], "with" => $value['with']);
+						if (count($validations[$field]) == 1) {
+							unset($validations[$field]);
+						} else {
+							unset($validations[$field][$key]);
+						}
+					} else if ($value[0] == "custom") {
+						$custom[] = array($field, "message" => $value['message'], "function" => $value['function']);
+						if (count($validations[$field]) == 1) {
+							unset($validations[$field]);
+						} else {
+							unset($validations[$field][$key]);
+						}
+					}
+				}
+			}
+
+            $object_array = static::convertToArray($object, $object->_variables);
+			$errors = Validator::check($object_array, $validations);
+
+			// Unique checking
+			foreach ($unique as $value) {
+				$result = $className::findOneBy(array($value[0] => $object->$value[0]));
+				if (!empty($result)) {
+
+					// same unique value but different id
+					if (isset($object->id) && $object->id != $result->id) {
+						$errors[$value[0]][] = $value["message"];
+					}
+
+					// new instance trying to be same unique value
+					if (!$object->id) {
+						$errors[$value[0]][] = $value["message"];
+					}
+				}
+			}
+
+			// Equal with checking
+			foreach ($equalWith as $key => $value) {
+
+                $field = $object_array[reset($value)];
+                $against_field = $object_array[$value['with']];
+
+                if (strcmp($field, $against_field) != 0) {
+                    $errors[reset($value)][] = $value['message'];
+                }
+
+			}
+
+			// Custom validation
+			foreach ($custom as $key => $value) {
+				$rule = create_function('$object', $value['function']);
+				if ($rule($object, $object->$value[0]) === false) {
+					$errors[$value[0]][] = $value['message'];
+				}
+			}
+
+			$reflection = new \ReflectionClass($object);
+			$properties = $reflection->getProperties(\ReflectionProperty::IS_PROTECTED);
+			try {
+				foreach ($properties as $property) {
+					$property->setAccessible(true);
+                    if (ModelAnnotation::match($property, array('ManyToMany', 'OneToMany'))) {
+                        $relation = $property->getValue($object);
+                        foreach ($relation as $model) {
+                            if (!in_array(spl_object_hash($model), $object_hash)) {
+                                if (!ModelValidator::isValid($model, $object_hash)) {
+                                    $errors[$property->getName()] = $model->getErrors();
+                                }
+                            }
+                        }
+                    } elseif(ModelAnnotation::match($property, array('ManyToOne', 'OneToOne'))) {
+                        if ($model = $property->getValue($object)) {
+                            if (!in_array(spl_object_hash($model), $object_hash)) {
+                                if (!ModelValidator::isValid($model, $object_hash)) {
+                                    $errors[$property->getName()] = $model->getErrors();
+                                }
+                            }
+                        }
+                    }
+				}
+			} catch (\ReflectionException $e) {
+				die($e->getTrace() . "-" . $e->getMessage());
+			}
+		}
+
+		ModelValidator::$_errors[spl_object_hash($object)] = $errors;
+		return $errors;
+	}
+
+	/**
+	 *
+	 * @param Model $object
+	 */
+	public static function getErrors($object) {
+		return ModelValidator::$_errors[spl_object_hash($object)];
+	}
+
+    /**
+     * Convert doctrine object to array
+     * @param Model $object
+     * @param array $addition
+     * @return array
+     */
+	public static function convertToArray($object, $addition = array()) {
+
+        $result = $addition;
+
+        $reflector = new \ReflectionClass($object);
+		$properties = $reflector->getProperties(\ReflectionProperty::IS_PROTECTED);
+
+        foreach ($properties as $property) {
+
+            $property->setAccessible(true);
+			$value = $property->getValue($object);
+			$field = $property->getName();
+
+            if ($value == null) {
+				$result[$field] = null;
+			} else {
+
+                if (ModelAnnotation::match($property, array('ManyToMany', 'OneToMany'))) {
+					$result[$field] = $value->count();
+				} elseif (ModelAnnotation::match($property, array('ManyToOne', 'OneToOne'))) {
+					$result[$field] = $value->id;
+				} else {
+					$result[$field] = $value;
+				}
+
+			}
+		}
+
+		return $result;
+	}
+
+}

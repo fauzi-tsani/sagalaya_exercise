@@ -1,0 +1,25 @@
+{% macro errors(input) %}
+        {% for error in input %}
+        <div class="warning">{{error}}</div>
+        {% endfor %}
+{% endmacro %}
+ 
+{{ this.form.create() }}
+
+        {{ this.form.field('profile.fullname',{'value':profile.fullname})}}
+		{{ _self.errors(errors.fullname) }}
+
+        {{ this.form.field('email',{'value':user.email})}}
+		{{ _self.errors(errors.email) }} 
+
+		<label for="Password">Password</label>
+        {{ this.form.password('password',{'value':'','type':'password'})}}
+        {{ _self.errors(errors.password) }}
+<!--
+		<label for="Password">Retype Password</label>       
+		{{ this.form.password('retypePassword',{'value':'','type':'repassword'})}}
+        {{ _self.errors(errors.repassword) }}
+-->         
+        {{ this.form.submit('Create',{'class':'btn-submit'}) }}
+ 
+{{ this.form.end() }}

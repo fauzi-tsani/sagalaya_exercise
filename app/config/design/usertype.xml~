@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model>
+	<config>
+		<name>UserType</name>
+		<table>usertype</table>
+		<callback>true</callback>
+		<repository>true</repository>
+	</config>
+	<fields>
+		<field>
+			<name>id</name>
+			<type>index</type>
+		</field>		
+		<field>
+			<name>user_type</name>
+			<type>string</type>
+			<length>255</length>
+		</field>
+	</fields>
+	<validations>		
+		<validation>
+			<field>user_type</field>
+			<rules>
+				<rule>
+					<type>notEmpty</type>
+					<message>user type can't be empty</message>
+				</rule>
+			</rules>
+		</validation>	 
+	</validations>
+</model>

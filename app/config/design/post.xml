@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model>
+	<config>
+		<name>Post</name>
+		<table>posts</table>
+		<callback>true</callback>
+		<repository>true</repository>
+	</config>
+	<fields>
+		<field>
+			<name>id</name>
+			<type>index</type>
+		</field>
+		<field>
+			<name>title</name>
+			<type>string</type>
+			<length>64</length>
+		</field>
+		<field>
+			<name>content</name>
+			<type>text</type>
+		</field>
+		<field>
+			<name>user</name>
+			<type>relation</type>
+			<relation>OneToOne</relation>
+			<targetEntity>User</targetEntity>
+			<cascades>
+				<cascade>persist</cascade>
+				<cascade>remove</cascade>
+			</cascades>
+		</field>
+	</fields>
+	<validations>
+			<validation>
+				<field>title</field>
+				<rules>
+					<rule>
+						<type>notEmpty</type>
+						<message>title can't be empty</message>
+					</rule>
+				</rules>
+			</validation>
+			<validation>
+				<field>user</field>
+				<rules>
+					<rule>
+						<type>notEmpty</type>
+						<message>you have to login</message>
+					</rule>
+				</rules>
+			</validation>
+	</validations>
+</model>

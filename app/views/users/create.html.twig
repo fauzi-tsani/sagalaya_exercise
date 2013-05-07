@@ -1,0 +1,39 @@
+{% macro errors(input) %}
+        {% for error in input %}
+        <div class="warning">{{error}}</div>
+        {% endfor %}
+{% endmacro %}
+
+{% if message %}
+        <div class="alert">{{ message }}</div>
+{% endif %}
+
+{{ this.form.create() }}
+    <fieldset>
+        <legend>Create user</legend>
+
+		{{ this.form.field('profile.fullname',{'value':profile.fullname}) }}
+		{{ _self.errors(errors.profile.fullname) }}
+
+		{{ this.form.field('profile.address',{'value':''}) }}
+		{{ this.form.field('profile.phone',{'value':''}) }}
+
+        {{ this.form.field('email',{'value':user.email})}}
+		{{ _self.errors(errors.email) }} 
+
+		
+<!--
+        {{ this.form.field('username',{'value':user.username})}}
+		{{ _self.errors(errors.username) }}
+-->
+		<label for="Password">Password</label>
+        {{ this.form.password('password',{'value':'','type':'password'})}}
+        {{ _self.errors(errors.password) }}
+        <div class="control-group">
+            <div class="controls">
+                {{ this.form.submit('Create',{'class':'btn btn-primary'}) }}
+            </div>
+        </div>
+    </fieldset>
+{{ this.form.end() }}
+

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model>
+	<config>
+		<name>Profile</name>
+		<table>Profile</table>
+		<callback>true</callback>
+		<repository>true</repository>
+	</config>
+	<fields>
+		<field>
+			<name>id</name>
+			<type>index</type>
+		</field>		
+		<field>
+			<name>fullname</name>
+			<type>string</type>
+			<length>255</length>
+		</field>
+		<field>
+			<name>address</name>
+			<type>string</type>
+			<length>255</length>
+		</field>
+		<field>
+			<name>phone</name>
+			<type>integer</type>
+			<length>25</length>
+		</field>
+	</fields>
+	<validations>		
+		<validation>
+			<field>address</field>
+			<rules>
+				<rule>
+					<type>notEmpty</type>
+					<message>address can't be empty</message>
+				</rule>
+			</rules>
+		</validation>
+		<validation>
+			<field>phone</field>
+			<rules>
+				<rule>
+					<type>notEmpty</type>
+					<message>phone can't be empty</message>				
+				</rule>
+			</rules>
+		</validation>		
+	</validations>
+</model>

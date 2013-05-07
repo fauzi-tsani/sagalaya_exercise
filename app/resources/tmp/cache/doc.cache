@@ -1,0 +1,1 @@
+{"app\\models\\User":{"validations":{"message":false}},"app\\models\\Post":{"validations":{"message":false}},"app\\models\\Profile":{"validations":{"message":false}},"app\\models\\UserType":{"validations":{"message":false}}}

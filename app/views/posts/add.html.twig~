@@ -1,0 +1,16 @@
+{% macro errors(input) %}
+        {% for error in input %}
+        <div class="warning">{{error}}</div>
+        {% endfor %}
+{% endmacro %}
+ 
+{{ this.form.create() }}
+	{{ this.form.hidden('user',{'value':''})}}	
+	{{ this.form.field('title',{'value':post.title})}}
+	{{ _self.errors(errors.title) }}
+	<label>Content</label>
+	{{ this.form.text('content',{'value':post.content})}}
+	{{ _self.errors(errors.title) }}
+
+    {{ this.form.submit('Create',{'class':'btn-submit'}) }}
+{{ this.form.end() }}

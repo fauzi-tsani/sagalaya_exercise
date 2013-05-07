@@ -1,0 +1,27 @@
+<div class="span4">
+    <h3>General Information</h3>
+    <table class="table table-bordered">
+        <tr>
+            <th></th>
+            <td></td>
+        </tr>
+    </table>
+</div>
+<div class="span8">
+    <h3>Detail Information</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>No</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for users in user %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ users.email }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

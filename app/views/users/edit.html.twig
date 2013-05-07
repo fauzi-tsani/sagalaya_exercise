@@ -1,0 +1,23 @@
+{{ this.form.create() }}
+<fieldset>
+    <legend>Edit user</legend>
+	
+		{{ this.form.field('fullname',{'value':user.fullname})}}
+		{{ _self.errors(errors.fullname) }}
+
+        {{ this.form.field('email',{'value':user.email})}}
+		{{ _self.errors(errors.email) }} 
+
+        {{ this.form.field('username',{'value':user.username})}}
+		{{ _self.errors(errors.username) }}
+
+		<label for="Password">Password</label>
+        {{ this.form.password('password',{'value':'','type':'password'})}}
+        {{ _self.errors(errors.password) }}
+    <div class="control-group">
+        <div class="controls">
+            {{ this.form.submit('Edit',{'class':'btn btn-primary'}) }}
+        </div>
+    </div>
+</fieldset>
+{{ this.form.end() }}

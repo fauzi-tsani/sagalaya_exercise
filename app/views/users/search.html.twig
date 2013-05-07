@@ -1,0 +1,31 @@
+{% macro errors(input) %}
+        {% for error in input %}
+        <div class="warning">{{error}}</div>
+        {% endfor %}
+{% endmacro %}
+
+{% if message %}
+        <div class="alert">{{ message }}</div>
+{% endif %}
+<form method="post" action="/users/search">
+    <fieldset>
+        <legend>filter user data</legend>
+        <label>email :</label><input type="text" name="email"><br>
+        <label>type :</label><select name="type">
+            <option value="">-- Select --</option>
+            <option value="User">User</option>
+            <option value="Administrator">Admin</option>
+        </select> <br>
+        <div class="control-group">
+            <div class="controls">
+                <input type="submit" value="Find" class="btn btn-primary">
+            </div>
+        </div>
+    </fieldset>
+</form>
+<ul>
+    {% for user in filter %}
+        <li>{{user.email}} || {{user.profile.phone}}</li>
+    {% endfor %}
+</ul>
+
