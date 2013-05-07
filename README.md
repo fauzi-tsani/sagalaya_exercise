@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 SAGALAYA PHP-FRAMEWORK
 ======================
 
@@ -83,3 +84,9 @@ e.g View use-case :
 		{% endfor %} 
 	</code>
 </pre>
+=======
+sagalaya_exercise
+=================
+
+an exercise to use sagalaya framework
+>>>>>>> 5eb688f83ec66c1f5e577560fccc9c407a97a1f1
